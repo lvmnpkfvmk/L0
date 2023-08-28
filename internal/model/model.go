@@ -25,7 +25,7 @@ type Payment struct {
 	CustomFee    int    `json:"custom_fee"`
 }
 
-type Item []struct {
+type Item struct {
 	ChrtID      int    `json:"chrt_id"`
 	TrackNumber string `json:"track_number"`
 	Price       int    `json:"price"`

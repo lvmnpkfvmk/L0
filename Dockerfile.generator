@@ -1,0 +1,11 @@
+FROM golang:1.21
+
+COPY . /go/src/app
+
+WORKDIR /go/src/app/cmd/generator
+
+RUN go build -o generator main.go
+
+EXPOSE 9010
+
+CMD ["./generator"]

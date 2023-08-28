@@ -21,11 +21,23 @@ services:
     command:
     - "--cluster_id"
     - "testcluster"
+
+  generator:
+    depends_on:
+      - nats-streaming
+    build:
+      context: ./
+      dockerfile: Dockerfile.generator
+    container_name: generator
+    ports:
+     - "9010:9010"
+    command: ["./generator"]
   
   main:
     depends_on:
       - postgres
       - nats-streaming
+      - generator
     build:
       context: ./
       dockerfile: Dockerfile
