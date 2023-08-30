@@ -51,7 +51,8 @@
 
 Воспользуйтесь утилитами WRK и Vegeta, попробуйте оптимизировать код.
 ## Решение
-Запуска ```sh
+Запуска 
+```sh
 git clone https://github.com/lvmnpkfvmk/L0.git
 docker-compose up
 ```
