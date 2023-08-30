@@ -58,5 +58,6 @@ docker-compose up
 ```
 ### Бекенд
 <img align="center" width="100%" src="./images/backend.png">
+
 ### Фронтенд
 <img align="center" width="100%" src="./images/frontend.png">
