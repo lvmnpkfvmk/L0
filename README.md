@@ -50,3 +50,12 @@
 						
 
 Воспользуйтесь утилитами WRK и Vegeta, попробуйте оптимизировать код.
+## Решение
+Запуска ```sh
+git clone https://github.com/lvmnpkfvmk/L0.git
+docker-compose up
+```
+### Бекенд
+<img align="right" width="50%" src="./images/backend.png">
+### Фронтенд
+<img align="right" width="50%" src="./images/frontend.png">

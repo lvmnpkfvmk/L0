@@ -103,7 +103,6 @@ func (is *Items) Scan(value interface{}) error {
 	return nil
 }
 
-// Implement the gorm.Valuer interface to serialize the data to JSON
 func (is Items) Value() (driver.Value, error) {
 	return json.Marshal(is)
 }

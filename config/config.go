@@ -9,9 +9,8 @@ import (
 )
 
 type Config struct {
-	HTTPAddr         string `envconfig:"HTTP_ADDR"`
-	PgURL            string `envconfig:"PG_URL"`
-	PgMigrationsPath string `envconfig:"PG_MIGRATIONS_PATH"`
+	HTTPAddr string `envconfig:"HTTP_ADDR"`
+	PgURL    string `envconfig:"PG_URL"`
 }
 
 var (

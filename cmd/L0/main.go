@@ -22,7 +22,6 @@ func main() {
 	}
 }
 
-
 func run() error {
 	ctx := context.Background()
 	cfg := config.Get()
