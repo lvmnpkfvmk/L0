@@ -1,6 +1,11 @@
 package model
 
-import "time"
+import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 type Delivery    struct {
 	Name    string `json:"name"`
@@ -11,7 +16,13 @@ type Delivery    struct {
 	Region  string `json:"region"`
 	Email   string `json:"email"`
 }
+func (d Delivery) Value() (driver.Value, error) {
+    return json.Marshal(d)
+}
 
+func (d *Delivery) Scan(src interface{}) error {
+    return json.Unmarshal(src.([]byte), &d)
+}
 type Payment struct {
 	Transaction  string `json:"transaction"`
 	RequestID    string `json:"request_id"`
@@ -24,7 +35,13 @@ type Payment struct {
 	GoodsTotal   int    `json:"goods_total"`
 	CustomFee    int    `json:"custom_fee"`
 }
+func (p Payment) Value() (driver.Value, error) {
+    return json.Marshal(p)
+}
 
+func (p *Payment) Scan(src interface{}) error {
+    return json.Unmarshal(src.([]byte), &p)
+}
 type Item struct {
 	ChrtID      int    `json:"chrt_id"`
 	TrackNumber string `json:"track_number"`
@@ -38,15 +55,21 @@ type Item struct {
 	Brand       string `json:"brand"`
 	Status      int    `json:"status"`
 }
+func (i Item) Value() (driver.Value, error) {
+    return json.Marshal(i)
+}
 
+func (i *Item) Scan(src interface{}) error {
+    return json.Unmarshal(src.([]byte), &i)
+}
 type Order struct {
-	OrderUID    string `json:"order_uid"`
+	OrderUID    string `json:"order_uid" gorm:"primaryKey`
 	TrackNumber string `json:"track_number"`
 	Entry       string `json:"entry"`
 
-	Delivery Delivery `json:"delivery"`
-	Payment  Payment  `json:"payment"`
-	Items    []Item   `json:"items"`
+	Delivery Delivery `json:"delivery" gorm:"embedded;embeddedPrefix:delivery_ `
+	Payment  Payment  `json:"payment" gorm:"embedded;embeddedPrefix:delivery_`
+	Items    Items   `json:"items" gorm:"type:json"`
 	Locale            string    `json:"locale"`
 	InternalSignature string    `json:"internal_signature"`
 	CustomerID        string    `json:"customer_id"`
@@ -55,4 +78,25 @@ type Order struct {
 	SmID              int       `json:"sm_id"`
 	DateCreated       time.Time `json:"date_created"`
 	OofShard          string    `json:"oof_shard"`
+}
+type Items []Item
+func (is *Items) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("Error casting value to bytes")
+	}
+
+	var items []Item
+	err := json.Unmarshal(bytes, &items)
+	if err != nil {
+		return err
+	}
+
+	*is = items
+	return nil
+}
+
+// Implement the gorm.Valuer interface to serialize the data to JSON
+func (is Items) Value() (driver.Value, error) {
+	return json.Marshal(is)
 }

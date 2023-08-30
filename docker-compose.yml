@@ -47,6 +47,5 @@ services:
     environment:
       HTTP_ADDR: ":9090"
       PG_URL: "postgres://postgres:postgres@postgres/postgres?sslmode=disable"
-      PG_MIGRATIONS_PATH: "file://../../internal/pg/migrations"
 
     command: ["./main"]

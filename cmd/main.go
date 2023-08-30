@@ -5,14 +5,15 @@ import (
 	"encoding/json"
 	"log"
 
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"net/http"
 	"github.com/nats-io/nats.go"
-	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/lvmnpkfvmk/L0/config"
 	"github.com/lvmnpkfvmk/L0/internal/model"
+	"github.com/lvmnpkfvmk/L0/internal/repositories/orderrepo"
 )
 
 func main() {
@@ -25,19 +26,10 @@ func run() error {
 	ctx := context.Background()
 	cfg := config.Get()
 
-	dbpool, err := pgxpool.New(ctx, cfg.PgURL)
+	repo, err := orderrepo.NewOrderRepository(ctx, cfg)
 	if err != nil {
-		log.Fatalf("Unable to create connection pool: %v\n", err)
+		log.Fatalf("Error creating repository: %v", err)
 	}
-	defer dbpool.Close()
-
-	var greeting string
-	err = dbpool.QueryRow(ctx, "select 'Hello, world!'").Scan(&greeting)
-	if err != nil {
-		log.Fatalf("Unable to create connection pool: %v\n", err)
-	}
-	log.Println(greeting)
-
 
 	conn, err := nats.Connect("nats://nats-streaming:4222")
 	if err != nil {
@@ -48,20 +40,20 @@ func run() error {
 	_, err = conn.Subscribe("orders",
 		func(msg *nats.Msg) {
 			var order model.Order
-			funcErr := json.Unmarshal(msg.Data, &order)
-			if funcErr != nil {
-				log.Println(funcErr)
+			err := json.Unmarshal(msg.Data, &order)
+			if err != nil {
+				log.Printf("Error unmarshaling order: %v\n", err)
 				return
 			}
 			log.Println(order)
 
-			// funcErr = stor.CreateOrder(order)
-			// if funcErr != nil {
-			// 	logger.Error(errors.Wrap(funcErr, "conn.Subscribe: stor.CreateOrder"))
-			// 	return
-			// }
+			err = repo.CreateOrder(&order)
+			if err != nil {
+				log.Printf("Error unmarshaling order: %v\n", err)
+				return
+			}
 
-			// logger.Debugf("Received order %v", order)
+			log.Printf("Received order: %v\n", order.OrderUID)
 		},
 	)
 
