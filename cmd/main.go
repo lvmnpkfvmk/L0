@@ -66,6 +66,7 @@ func run() error {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
+	e.Static("/", "../web")
 	// Routes
 	e.GET("/get_order/:id", func(c echo.Context) error {
 		order, err := repo.GetOrder(c.Param("id"))
