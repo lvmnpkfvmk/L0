@@ -4,6 +4,7 @@ COPY . /go/src/app
 
 WORKDIR /go/src/app/cmd/generator
 
+RUN go mod download
 RUN go build -o generator main.go
 
 EXPOSE 9010

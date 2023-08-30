@@ -4,6 +4,7 @@ COPY . /go/src/app
 
 WORKDIR /go/src/app/cmd/
 
+RUN go mod download
 RUN go build main.go
 
 EXPOSE 9090

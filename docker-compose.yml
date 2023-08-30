@@ -9,7 +9,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=L0
+      - POSTGRES_DB=postgres
     volumes:
       - ./internal/pg/data:/var/lib/postgresql/data
 
@@ -46,7 +46,7 @@ services:
      - "9090:9090"
     environment:
       HTTP_ADDR: ":9090"
-      PG_URL: "postgres://postgres:postgres@postgres/main?sslmode=disable"
+      PG_URL: "postgres://postgres:postgres@postgres/postgres?sslmode=disable"
       PG_MIGRATIONS_PATH: "file://../../internal/pg/migrations"
 
     command: ["./main"]

@@ -1,15 +1,17 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"encoding/json"
 	"log"
+
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 	"github.com/nats-io/nats.go"
+	"github.com/jackc/pgx/v5/pgxpool"
 
-	// "github.com/lvmnpkfvmk/L0/config"
+	"github.com/lvmnpkfvmk/L0/config"
 	"github.com/lvmnpkfvmk/L0/internal/model"
 )
 
@@ -20,8 +22,22 @@ func main() {
 }
 
 func run() error {
-	// ctx := context.Background()
-	// cfg := config.Get()
+	ctx := context.Background()
+	cfg := config.Get()
+
+	dbpool, err := pgxpool.New(ctx, cfg.PgURL)
+	if err != nil {
+		log.Fatalf("Unable to create connection pool: %v\n", err)
+	}
+	defer dbpool.Close()
+
+	var greeting string
+	err = dbpool.QueryRow(ctx, "select 'Hello, world!'").Scan(&greeting)
+	if err != nil {
+		log.Fatalf("Unable to create connection pool: %v\n", err)
+	}
+	log.Println(greeting)
+
 
 	conn, err := nats.Connect("nats://nats-streaming:4222")
 	if err != nil {
@@ -48,12 +64,22 @@ func run() error {
 			// logger.Debugf("Received order %v", order)
 		},
 	)
-	r := gin.Default()
-	r.GET("/orders/:id", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+
+	// Echo instance
+	e := echo.New()
+
+	// Middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	
+	// Routes
+	e.GET("/", hello)
+
+	// Start server
+	e.Logger.Fatal(e.Start(":1323"))
 	return nil
 }
+
+func hello(c echo.Context) error {
+	return c.String(http.StatusOK, "Hello, World!")
+  }
