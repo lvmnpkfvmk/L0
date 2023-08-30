@@ -9,6 +9,9 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+var (
+	ErrNotFound       = fmt.Errorf("Order not found")
+)
 type OrderRepository struct {
 	db *gorm.DB
 	cache map[string]model.Order
@@ -41,7 +44,7 @@ func NewOrderRepository(ctx context.Context, cfg *config.Config) (*OrderReposito
 func (or *OrderRepository) GetOrder(orderUID string) (*model.Order, error) {
 	order, ok := or.cache[orderUID];
 	if !ok {
-		return nil, fmt.Errorf("Error not found")
+		return nil, ErrNotFound
 	}
 	return &order, nil
 }

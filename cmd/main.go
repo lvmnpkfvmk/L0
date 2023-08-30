@@ -22,6 +22,7 @@ func main() {
 	}
 }
 
+
 func run() error {
 	ctx := context.Background()
 	cfg := config.Get()
@@ -63,15 +64,21 @@ func run() error {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+	e.Use(middleware.CORS())
 
 	// Routes
-	e.GET("/", hello)
+	e.GET("/get_order/:id", func(c echo.Context) error {
+		order, err := repo.GetOrder(c.Param("id"))
+		if err != nil {
+			log.Printf("Error not found: %v\n", err)
+			return c.NoContent(http.StatusNotFound)
+		}
+
+		log.Printf("Sending order id: %s\n", order.OrderUID)
+		return c.JSON(http.StatusFound, order)
+	})
 
 	// Start server
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(cfg.HTTPAddr))
 	return nil
-}
-
-func hello(c echo.Context) error {
-	return c.String(http.StatusOK, "Hello, World!")
 }
