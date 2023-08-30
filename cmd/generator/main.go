@@ -6,8 +6,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/nats-io/nats.go"
 	"github.com/lvmnpkfvmk/L0/internal/model"
+	"github.com/nats-io/nats.go"
 )
 
 const (

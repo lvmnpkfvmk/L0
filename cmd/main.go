@@ -63,7 +63,7 @@ func run() error {
 	// Middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	
+
 	// Routes
 	e.GET("/", hello)
 
@@ -74,4 +74,4 @@ func run() error {
 
 func hello(c echo.Context) error {
 	return c.String(http.StatusOK, "Hello, World!")
-  }
+}
